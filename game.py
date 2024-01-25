@@ -66,6 +66,7 @@ def winningChance(player_id):
             player_winning_states.append(x)
     return count_item, player_winning_states
 
+#playCountAI = 0
 def aiPlay():
     '''
         #First I tried to make the AI play in random slots of the board
@@ -173,10 +174,10 @@ else:
 choice = input("Input TYPE for PLAYER " + str(player_id) + " (X/O): ")
 if choice == "X":
     player_type[player_id] = "X"
-    player_type[player_id + 1] = "O"
+    player_type[otherPlayer()] = "O"
 elif choice == "O":
     player_type[player_id] = "O"
-    player_type[player_id + 1] = "X"
+    player_type[otherPlayer()] = "X"
 else:
     print("Invalid choice! Game will end now.")
     quit()
@@ -227,10 +228,10 @@ while game_state:
         else:
             draw = True
     if draw:
-        print("GAME IS DRAW!")
+        print("GAME IS A DRAW!")
         game_state = False
 
-    # switching player chance if game not over
+    # Switching play chance to other player if the game is not over
     if otherPlayer() != 0:
         player_id = otherPlayer()
     else:
