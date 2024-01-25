@@ -4,7 +4,7 @@ import time
 game_state = True
 player_id = 1
 opponent_type = ""
-flag = False
+draw = False
 player_type = {1: "", 2: ""}
 board = [
     ["_", "_", "_"],
@@ -21,43 +21,6 @@ winning_states = [
     [(0, 0), (1, 1), (2, 2)],
     [(0, 2), (1, 1), (2, 0)],
 ]
-
-print("""
-1. Play against a player
-2. Play against the computer
-""")
-opponent_choice = int(input("Enter your choice (1/2): "))
-if opponent_choice == 1:
-    opponent_type = "P"
-elif opponent_choice == 2:
-    opponent_type = "C"
-else:
-    print("Invalid choice, game ending now.")
-    game_state = False
-    quit()
-
-
-
-for i in board:
-    for j in i:
-        print(j, end=" ")
-    print()
-
-# Choosing X or O for PLAYER 1
-choice = input("Input TYPE for PLAYER " + str(player_id) + " (X/O): ")
-if choice == "X":
-    player_type[player_id] = "X"
-    player_type[player_id + 1] = "O"
-elif choice == "O":
-    player_type[player_id] = "O"
-    player_type[player_id + 1] = "X"
-else:
-    print("Invalid choice! Game will end now.")
-    quit()
-
-playCountAI = 0
-
-
 def otherPlayer():
     if player_id == 1:
         return 2
@@ -66,7 +29,21 @@ def otherPlayer():
     else:
         return 0
 
-#Returns how close the player is to getting a pattern (1/2/2)
+def otherPlayerType():
+    if player_type[player_id] == "X":
+        return "O"
+    elif player_type[player_id] == "O":
+        return "X"
+    else:
+        return 0
+
+def printBoard():
+    for i in board:
+        for j in i:
+            print(j, end=" ")
+        print()
+
+#Returns an integer from -6 (worst case) to 5 (best case)
 def winningChance(player_id):
     count_item = 0
     player_winning_states = []
@@ -120,20 +97,20 @@ def aiPlay():
             playCountAI += 1
         '''
 
-    print("CPU is thinking...")
+    print("AI is thinking...")
     count_item, player_winning_states = winningChance(otherPlayer())
     ai_count_item, ai_winning_states = winningChance(player_id)
     freeSlots = []
 
     if ai_count_item >= 5:
-        print("AI leading so trying to win")
+ #       print("AI leading so trying to win")
         for x in ai_winning_states:
             for y in x:
                 a, b = y
                 if board[a][b] == "_":
                     freeSlots.append(y)
     else:
-        print("Player leading so trying to stop them")
+ #       print("Player leading so trying to stop them from winning")
         for x in player_winning_states:
             for y in x:
                 a, b = y
@@ -149,11 +126,8 @@ def aiPlay():
     row, col = random.choice(freeSlots)
     board[row][col] = player_type[player_id]
 
-    time.sleep(random.randint(2, 4))
-    for i in board:
-        for j in i:
-            print(j, end=" ")
-        print()
+    time.sleep(random.randint(1, 3))
+    printBoard()
 
 def playerPlay():
     pos = int(input(
@@ -179,11 +153,36 @@ def playerPlay():
         print("Invalid position, please try again!")
         return 0
 
-    for i in board:
-        for j in i:
-            print(j, end=" ")
-        print()
+    printBoard()
 
+print("""
+1. Play against a player
+2. Play against the computer
+""")
+opponent_choice = int(input("Enter your choice (1/2): "))
+if opponent_choice == 1:
+    opponent_type = "P"
+elif opponent_choice == 2:
+    opponent_type = "C"
+else:
+    print("Invalid choice, game ending now.")
+    game_state = False
+    quit()
+
+# Choosing X or O for PLAYER 1
+choice = input("Input TYPE for PLAYER " + str(player_id) + " (X/O): ")
+if choice == "X":
+    player_type[player_id] = "X"
+    player_type[player_id + 1] = "O"
+elif choice == "O":
+    player_type[player_id] = "O"
+    player_type[player_id + 1] = "X"
+else:
+    print("Invalid choice! Game will end now.")
+    quit()
+
+
+printBoard()
 # Main game logic
 while game_state:
     if player_id == 1:
@@ -219,19 +218,17 @@ while game_state:
         if count_x == 3 or count_o == 3:
             print("PLAYER", player_id, "(" + player_type[player_id] + ")", "HAS WON THE GAME!")
             game_state = False
-            quit()
 
     # DRAW condition game logic
     for x in board:
         if "_" in x:
-            flag = False
+            draw = False
             break
         else:
-            flag = True
-    if flag:
+            draw = True
+    if draw:
         print("GAME IS DRAW!")
         game_state = False
-        quit()
 
     # switching player chance if game not over
     if otherPlayer() != 0:
@@ -240,3 +237,5 @@ while game_state:
         print("Invalid player id")
         game_state = False
         quit()
+
+print("TicTacToe by Hara <3")
