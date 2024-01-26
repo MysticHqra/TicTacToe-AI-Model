@@ -68,11 +68,11 @@ def getWinningStates(player_id):
 
 def userItemSelect():
     # Choosing X or O for PLAYER 1
-    choice = input("Input TYPE for PLAYER " + str(player_id) + " (X/O): ")
-    if choice == "X":
+    choice = input("Select Item type for player " + str(player_id) + " (X/O): ")
+    if choice == "X" or choice == "x":
         player_type[player_id] = "X"
         player_type[otherPlayer()] = "O"
-    elif choice == "O":
+    elif choice == "O" or choice == "o":
         player_type[player_id] = "O"
         player_type[otherPlayer()] = "X"
     else:
