@@ -5,7 +5,7 @@ game_state = True
 draw = False
 player_id = 1
 opponent_type = ""
-player_type = {1: "", 2: ""}
+player_item_type = {1: "", 2: ""}
 board = [
     ["_", "_", "_"],
     ["_", "_", "_"],
@@ -30,9 +30,9 @@ def otherPlayer():
         return 0
 
 def otherPlayerItem():
-    if player_type[player_id] == "X":
+    if player_item_type[player_id] == "X":
         return "O"
-    elif player_type[player_id] == "O":
+    elif player_item_type[player_id] == "O":
         return "X"
     else:
         return 0
@@ -52,11 +52,11 @@ def getWinningStates(player_id):
         temp = 0
         for y in x:
             row, col = y
-            if board[row][col] == player_type[player_id]:
+            if board[row][col] == player_item_type[player_id]:
                 temp += 2
             elif board[row][col] == "_":
                 temp += 1
-            elif board[row][col] == player_type[otherPlayer()]:
+            elif board[row][col] == player_item_type[otherPlayer()]:
                 temp -= 2
         if temp > count_item:
             count_item = temp
@@ -71,11 +71,11 @@ def userItemSelect():
     # Choosing X or O for PLAYER 1
     choice = input("Select Item type for player " + str(player_id) + " (X/O): ")
     if choice == "X" or choice == "x":
-        player_type[player_id] = "X"
-        player_type[otherPlayer()] = "O"
+        player_item_type[player_id] = "X"
+        player_item_type[otherPlayer()] = "O"
     elif choice == "O" or choice == "o":
-        player_type[player_id] = "O"
-        player_type[otherPlayer()] = "X"
+        player_item_type[player_id] = "O"
+        player_item_type[otherPlayer()] = "X"
     else:
         print("Invalid choice! Game will end now.")
         game_state = False
@@ -115,7 +115,7 @@ def aiPlayOld():
 '''
 
 def aiPlay():
-    print("AI (" + player_type[player_id] + ") is thinking...")
+    print("AI (" + player_item_type[player_id] + ") is thinking...")
     player_count_item, player_winning_states = getWinningStates(otherPlayer())
     ai_count_item, ai_winning_states = getWinningStates(player_id)
     freeSlots = []
@@ -148,14 +148,14 @@ def aiPlay():
                     freeSlots.append((x, y))
 
     row, col = random.choice(freeSlots)
-    board[row][col] = player_type[player_id]
+    board[row][col] = player_item_type[player_id]
 
     time.sleep(1)
     printBoard()
 
 def userPlay():
     pos = int(input(
-        "Pos to place " + player_type[player_id] + " for player " + str(player_id) + " [0-8]: "))
+        "Pos to place " + player_item_type[player_id] + " for player " + str(player_id) + " [0-8]: "))
 
     row, col = 0, 0
     if 0 <= pos <= 2:
@@ -172,7 +172,7 @@ def userPlay():
         return 0
 
     if board[row][col] == "_":
-        board[row][col] = player_type[player_id]
+        board[row][col] = player_item_type[player_id]
     else:
         print("Invalid position, please try again!")
         return 0
@@ -200,9 +200,9 @@ if opponent_type == "P":
 elif opponent_type == "C":
     player_id = random.randint(1,2)
     if player_id == 2:
-        player_type[player_id] = random.choice(["X", "O"])
-        player_type[otherPlayer()] = otherPlayerItem()
-        print("AI is starting first and has chosen " + player_type[player_id])
+        player_item_type[player_id] = random.choice(["X", "O"])
+        player_item_type[otherPlayer()] = otherPlayerItem()
+        print("AI is starting first and has chosen " + player_item_type[player_id])
     elif player_id == 1:
         userItemSelect()
     else:
@@ -248,9 +248,9 @@ while game_state:
                 count_o += 1
         if count_x == 3 or count_o == 3:
             if opponent_type == "C" and player_id == 2:
-                print("AI", "(" + player_type[player_id] + ")", "HAS WON THE GAME!")
+                print("AI", "(" + player_item_type[player_id] + ")", "HAS WON THE GAME!")
             else:
-                print("PLAYER", player_id, "(" + player_type[player_id] + ")", "HAS WON THE GAME!")
+                print("PLAYER", player_id, "(" + player_item_type[player_id] + ")", "HAS WON THE GAME!")
             game_state = False
             break
 
