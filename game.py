@@ -2,9 +2,9 @@ import random
 import time
 
 game_state = True
+draw = False
 player_id = 1
 opponent_type = ""
-draw = False
 player_type = {1: "", 2: ""}
 board = [
     ["_", "_", "_"],
@@ -29,7 +29,7 @@ def otherPlayer():
     else:
         return 0
 
-def otherPlayerType():
+def otherPlayerItem():
     if player_type[player_id] == "X":
         return "O"
     elif player_type[player_id] == "O":
@@ -44,7 +44,7 @@ def printBoard():
         print()
 
 #Returns an integer from -6 (worst case) to 5 (best case)
-def winningChance(player_id):
+def getWinningStates(player_id):
     count_item = 0
     player_winning_states = []
     for x in winning_states:
@@ -66,14 +66,29 @@ def winningChance(player_id):
             player_winning_states.append(x)
     return count_item, player_winning_states
 
-#playCountAI = 0
-def aiPlay():
-    '''
+def userItemSelect():
+    # Choosing X or O for PLAYER 1
+    choice = input("Input TYPE for PLAYER " + str(player_id) + " (X/O): ")
+    if choice == "X":
+        player_type[player_id] = "X"
+        player_type[otherPlayer()] = "O"
+    elif choice == "O":
+        player_type[player_id] = "O"
+        player_type[otherPlayer()] = "X"
+    else:
+        print("Invalid choice! Game will end now.")
+        game_state = False
+        quit()
+
+'''
+playCountAI = 0
+def aiPlayOld():
+    
         #First I tried to make the AI play in random slots of the board
         #but it was not a good way for the AI to play, so I discarded this logic
         #feel free to check it out though
 
-            freeSlots = []
+        freeSlots = []
         for x in range(len(board)):
             for y in range(len(board[x])):
                 if board[x][y] == "_":
@@ -96,11 +111,12 @@ def aiPlay():
             row, col = random.choice(playStyle)
             board[row][col] = player_type[player_id]
             playCountAI += 1
-        '''
+'''
 
+def aiPlay():
     print("AI is thinking...")
-    count_item, player_winning_states = winningChance(otherPlayer())
-    ai_count_item, ai_winning_states = winningChance(player_id)
+    player_count_item, player_winning_states = getWinningStates(otherPlayer())
+    ai_count_item, ai_winning_states = getWinningStates(player_id)
     freeSlots = []
 
     if ai_count_item >= 5:
@@ -110,29 +126,35 @@ def aiPlay():
                 a, b = y
                 if board[a][b] == "_":
                     freeSlots.append(y)
-    else:
+    elif player_count_item >= 5:
  #       print("Player leading so trying to stop them from winning")
         for x in player_winning_states:
             for y in x:
                 a, b = y
                 if board[a][b] == "_":
                     freeSlots.append((a, b))
-        if len(freeSlots) == 0:
-            for x in ai_winning_states:
-                for y in x:
-                    a, b = y
-                    if board[a][b] == "_":
-                        freeSlots.append(y)
+    else:
+        for x in ai_winning_states:
+            for y in x:
+                a, b = y
+                if board[a][b] == "_":
+                    freeSlots.append(y)
+
+    if len(freeSlots) == 0:
+        for x in range(len(board)):
+            for y in range(len(board[x])):
+                if board[x][y] == "_":
+                    freeSlots.append((x, y))
 
     row, col = random.choice(freeSlots)
     board[row][col] = player_type[player_id]
 
-    time.sleep(random.randint(1, 3))
+    time.sleep(1)
     printBoard()
 
-def playerPlay():
+def userPlay():
     pos = int(input(
-        "Input where you want to place " + player_type[player_id] + " for player " + str(player_id) + " [0-8]: "))
+        "Pos to place " + player_type[player_id] + " for player " + str(player_id) + " [0-8]: "))
 
     row, col = 0, 0
     if 0 <= pos <= 2:
@@ -156,6 +178,7 @@ def playerPlay():
 
     printBoard()
 
+#CONSOLE LOG STARTS FROM HERE
 print("""
 1. Play against a player
 2. Play against the computer
@@ -170,30 +193,35 @@ else:
     game_state = False
     quit()
 
-# Choosing X or O for PLAYER 1
-choice = input("Input TYPE for PLAYER " + str(player_id) + " (X/O): ")
-if choice == "X":
-    player_type[player_id] = "X"
-    player_type[otherPlayer()] = "O"
-elif choice == "O":
-    player_type[player_id] = "O"
-    player_type[otherPlayer()] = "X"
+if opponent_type == "P":
+    userItemSelect()
+elif opponent_type == "C":
+    player_id = random.randint(1,2)
+    if player_id == 2:
+        player_type[player_id] = random.choice(["X", "O"])
+        player_type[otherPlayer()] = otherPlayerItem()
+        print("AI is starting first and has chosen " + player_type[player_id])
+    elif player_id == 1:
+        userItemSelect()
+    else:
+        print("Invalid player id")
+        game_state = False
+        quit()
 else:
-    print("Invalid choice! Game will end now.")
+    print("Invalid opponent_type")
+    game_state = False
     quit()
 
-
-printBoard()
 # Main game logic
 while game_state:
     if player_id == 1:
-        status = playerPlay()
+        status = userPlay()
         if status == 0:
             continue
 
     elif player_id == 2:
         if opponent_type == "P":
-            status = playerPlay()
+            status = userPlay()
             if status == 0:
                 continue
         elif opponent_type == "C":
@@ -217,10 +245,14 @@ while game_state:
             if board[a][b] == "O":
                 count_o += 1
         if count_x == 3 or count_o == 3:
-            print("PLAYER", player_id, "(" + player_type[player_id] + ")", "HAS WON THE GAME!")
+            if opponent_type == "C" and player_id == 2:
+                print("AI", "(" + player_type[player_id] + ")", "HAS WON THE GAME!")
+            else:
+                print("PLAYER", player_id, "(" + player_type[player_id] + ")", "HAS WON THE GAME!")
             game_state = False
+            break
 
-    # DRAW condition game logic
+    # DRAW condition check game logic
     for x in board:
         if "_" in x:
             draw = False
@@ -230,6 +262,7 @@ while game_state:
     if draw:
         print("GAME IS A DRAW!")
         game_state = False
+        break
 
     # Switching play chance to other player if the game is not over
     if otherPlayer() != 0:
