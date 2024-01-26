@@ -42,6 +42,7 @@ def printBoard():
         for j in i:
             print(j, end=" ")
         print()
+    print()
 
 #Returns an integer from -6 (worst case) to 5 (best case)
 def getWinningStates(player_id):
@@ -114,7 +115,7 @@ def aiPlayOld():
 '''
 
 def aiPlay():
-    print("AI is thinking...")
+    print("AI (" + player_type[player_id] + ") is thinking...")
     player_count_item, player_winning_states = getWinningStates(otherPlayer())
     ai_count_item, ai_winning_states = getWinningStates(player_id)
     freeSlots = []
