@@ -180,11 +180,12 @@ def userPlay():
     printBoard()
 
 #CONSOLE LOG STARTS FROM HERE
-print("""
-1. Play against a player
+printBoard()
+print("""1. Play against a player
 2. Play against the computer
 """)
 opponent_choice = int(input("Enter your choice (1/2): "))
+print()
 if opponent_choice == 1:
     opponent_type = "P"
 elif opponent_choice == 2:
